@@ -1,14 +1,14 @@
 # 📘 English Grammar Book Bot (RAG + LangChain + Streamlit)
 
 An end-to-end, modular **Retrieval-Augmented Generation (RAG)** chatbot built with **LangChain**, **Chroma**, **HuggingFace Embeddings**, **Groq LLM**, and **Streamlit**.  
-It answers English grammar questions **strictly from a single local grammar book**—providing structured grammar explanations, page-number citations, conversation memory, and zero outside-knowledge hallucination.
+It answers English grammar questions **strictly from a single local grammar book**—providing structured grammar explanations, page-number citations, conversation memory, zero outside-knowledge hallucination (with an optional labeled General AI Fallback toggle in the sidebar).
 
 ---
 
 ## 🎯 Problem Statement
 Learners studying from large English grammar reference books struggle to quickly locate exact **rules, tips & tricks, correct/incorrect examples, and common mistakes** for a specific topic without flipping through hundreds of pages.
 
-**Solution:** A strictly grounded RAG pipeline that indexes the grammar book once into a local persistent vector store and answers every query exclusively from retrieved book pages. If a topic is not present in the book, the bot responds:
+**Solution:** A strictly grounded RAG pipeline that indexes the grammar book once into a local persistent vector store and answers every query exclusively from retrieved book pages. If a topic is not present in the book (default Strict Mode), the bot responds:
 > `Not found in the book.`
 
 ---
@@ -18,15 +18,15 @@ Learners studying from large English grammar reference books struggle to quickly
 - **Overlapping Text Chunking (FR2):** Splits pages with `RecursiveCharacterTextSplitter` (`chunk_size=1000`, `chunk_overlap=200`) without breaking sentence meaning or losing metadata.
 - **Local Persistent Vector Store (FR3):** Generates embeddings locally using HuggingFace (`hotchpotch/bekko-embedding-v1-a8m`) and persists them to local **Chroma** (index once, reuse across sessions without duplicate vectors).
 - **Semantic Top-k Retrieval (FR4):** Retrieves the top `k=6` most relevant chunks via similarity search.
-- **Strict Grounded Generation (FR5):** Uses an LCEL chain (`ChatPromptTemplate | ChatGroq | StrOutputParser`) with `temperature=0.0` and an anti-hallucination guardrail (`"Not found in the book."`).
+- **Strict Grounded Generation + Optional Fallback Toggle (FR5):** Uses an LCEL chain (`ChatPromptTemplate | ChatGroq | StrOutputParser`) with `temperature=0.0` and an anti-hallucination guardrail (`"Not found in the book."`). Includes an optional sidebar toggle (**OFF by default**) that, when enabled, provides a clearly labeled `⚠️ Not found in the book — General AI Answer:` response without misleading book citations.
 - **Fixed Structured Grammar Output (FR6):** Every in-book topic answer follows a clean 5-part format:
   1. **Rule**
   2. **Tips & Tricks**
   3. **Correct Examples (Right)**
   4. **Incorrect Examples (Wrong)**
   5. **Common Mistakes**
-- **Page-Number Citations & Source Viewer (FR7):** Displays exact cited book page numbers and expandable raw book excerpts for every answer.
-- **Streamlit Chat UI (FR8):** Clean chat interface with message history, sidebar PDF upload, one-click full book indexing/re-indexing, clear chat button, and expandable source viewer.
+- **Page-Number Citations & Source Viewer (FR7):** Displays exact cited book page numbers (inline `(Page X)` + citation footer) and expandable raw book excerpts for every book-grounded answer.
+- **Streamlit Chat UI (FR8):** Clean chat interface with message history, sidebar PDF upload, one-click full book indexing/re-indexing, Strict/Fallback mode toggle, clear chat button, and expandable source viewer.
 - **Conversation Memory & Query Rewriting (FR9):** Tracks recent chat turns (`Human` / `AI` roles) and rewrites follow-up queries into standalone search queries for accurate multi-turn retrieval.
 - **Human-Checked Evaluation Suite (FR10):** Includes `eval/test_questions.json` and `eval/eval.py` covering in-book topics, follow-up memory, and out-of-book hallucination tests.
 
@@ -60,7 +60,7 @@ GrammarRetriever (src/retriever.py)      ──► Top-k (k=6) Relevant Chunks +
    │
    ▼
 RAGChain (src/rag_chain.py — LCEL)       ──► Strict Prompt + Context + History → Groq LLM
-   │
+   │                                           (Optional labeled Fallback if toggle ON & not in book)
    ▼
 Structured 5-Section Answer + Page Citations → Streamlit UI (with Expandable Source Viewer)
 ```
@@ -79,14 +79,14 @@ Grammar_bot/
 ├── .env                     # Local secret API keys (git-ignored)
 ├── .gitignore               # Excludes .env, .venv, data/book/, and data/vector_store/
 ├── ui/
-│   └── chatapp.py           # ChatApp class (Streamlit UI, upload/index, chat, source viewer)
+│   └── chatapp.py           # ChatApp class (Streamlit UI, upload/index, fallback toggle, chat, source viewer)
 ├── src/
 │   ├── __init__.py
 │   ├── book_loader.py       # BookLoader: page-wise PDF extraction + markdown cleaning
 │   ├── text_chunker.py      # TextChunker: RecursiveCharacterTextSplitter wrapper
 │   ├── vector_store.py      # VectorStoreManager: local embeddings + persistent Chroma DB
 │   ├── retriever.py         # GrammarRetriever: similarity top-k retriever interface
-│   └── rag_chain.py         # RAGChain: LCEL Conversation Retrieval Chain + memory + guardrails
+│   └── rag_chain.py         # RAGChain: LCEL Conversation Retrieval Chain + strict/fallback modes + memory
 ├── eval/
 │   ├── test_questions.json  # 8 evaluation queries (in-book, follow-up, out-of-book)
 │   ├── eval.py              # Automated runner saving report to eval/eval_results.json
@@ -165,6 +165,7 @@ uv run streamlit run app.py
 1. Open `http://localhost:8501` in your browser.
 2. Click **"Index / Re-index Full Book"** in the sidebar (runs once, takes ~1–3 minutes on CPU).
 3. Ask any grammar topic and expand **"View Book Sources & Page Excerpts"** to inspect exact book pages.
+4. *(Optional)* Toggle **"Allow General AI Fallback"** in the sidebar if you want labeled general-knowledge answers for topics missing from the book (OFF by default for strict book-only mode).
 
 ### Option 2: Run CLI Ingestion
 ```bash
@@ -180,7 +181,7 @@ Review `eval/eval_results.json` to inspect retrieved page citations, structured 
 ---
 
 ## 📊 Evaluation Summary (FR10)
-Tested on **8 queries** across the full 362-page English grammar book:
+Tested on **8 queries** across the full 362-page English grammar book (in default Strict Mode):
 - **In-Book Topic Queries (Q1, Q3–Q6):** Retrieved exact book chapters (Present Simple, Past Simple vs. Present Perfect, Future `will`/`going to`, Relative Clauses, Conditionals) with accurate page citations.
 - **Follow-Up Memory Query (Q2):** Correctly resolved `"What are its negative form rules?"` to Present Simple Negative using conversation memory and query rewriting.
 - **Out-of-Book Guardrail (Q7–Q8):** **2/2 PASS** — replied `"Not found in the book."` with zero hallucination.

@@ -43,6 +43,8 @@ class ChatApp:
             st.session_state.messages = []
         if "active_book_path" not in st.session_state:
             st.session_state.active_book_path = str(BOOK_PATH)
+        if "allow_fallback" not in st.session_state:
+            st.session_state.allow_fallback = False
         if "rag_chain" not in st.session_state:
             st.session_state.rag_chain = self._try_build_rag_chain()
 
@@ -124,6 +126,17 @@ class ChatApp:
                     st.error(f"Indexing failed: {exc}")
 
             st.divider()
+            st.session_state.allow_fallback = st.toggle(
+                "Allow General AI Fallback",
+                value=st.session_state.allow_fallback,
+                help="OFF = Strict Book-Only Mode (Recommended). ON = Uses General AI if not in the book.",
+            )
+            if st.session_state.allow_fallback:
+                st.caption("Mode: Book + General AI Fallback (labeled)")
+            else:
+                st.caption("Mode: Strict Book-Only (Zero Hallucination)")
+
+            st.divider()
             if st.button("Clear Chat History", use_container_width=True):
                 st.session_state.messages = []
                 if st.session_state.rag_chain is not None:
@@ -167,7 +180,10 @@ class ChatApp:
         with st.chat_message("assistant"):
             try:
                 with st.spinner("Searching your grammar book..."):
-                    result = st.session_state.rag_chain.ask(user_query)
+                    result = st.session_state.rag_chain.ask(
+                        user_query,
+                        allow_fallback=st.session_state.allow_fallback,
+                    )
                 answer = result["answer"]
                 sources = result["sources"]
                 st.markdown(answer)
@@ -188,7 +204,7 @@ class ChatApp:
         )
         st.title("English Grammar Book Bot")
         st.caption(
-            "Strict RAG Chatbot — Answers ONLY from your grammar book with page citations."
+            "Strict RAG Chatbot — Answers from your grammar book with page citations (optional fallback in sidebar)."
         )
         self._render_sidebar()
         self._render_chat()

@@ -20,16 +20,22 @@ Not found in the book.
 3. For grammar topic questions found in the Book Context, ALWAYS use this exact structure:
 
 ### Rule
-(Exact rule from the book)
+(Exact rule from the book with page citation like (Page X))
 
 ### Tips & Tricks
-(Tips/notes from the book, or write: Not mentioned in the retrieved book pages.)
+(Tips/notes from the book with (Page X) — do NOT put example sentences here; if none, write: Not mentioned in the retrieved book pages.)
 
-###  Examples 
-(Correct examples from the book, or write: Not mentioned in the retrieved book pages.)
+### Correct Examples (Right)
+(ALL correct example sentences from the Book Context with (Page X), or write: Not mentioned in the retrieved book pages.)
+
+### Incorrect Examples (Wrong)
+(ALL incorrect/wrong example sentences from the Book Context with (Page X), or write: Not mentioned in the retrieved book pages.)
 
 ### Common Mistakes
-(Common mistakes from the book, or write: Not mentioned in the retrieved book pages.)
+(Common mistakes from the book with (Page X), or write: Not mentioned in the retrieved book pages.)
+
+4. Always place example sentences found in the Book Context under Correct Examples (Right) or Incorrect Examples (Wrong).
+5. Always cite exact book page numbers like (Page X) strictly from the [Page X] tags in Book Context.
 
 Book Context:
 {context}
@@ -39,13 +45,30 @@ Chat History:
 """
 
 
+FALLBACK_SYSTEM_PROMPT = """You are a helpful English Grammar Tutor.
+The user's question was not found in their grammar book.
+Start your response with this exact warning line:
+⚠️ **Not found in the book — General AI Answer:**
+
+Then clearly answer using this exact structure for grammar topics:
+### Rule
+### Tips & Tricks
+### Correct Examples (Right)
+### Incorrect Examples (Wrong)
+### Common Mistakes
+
+Chat History:
+{chat_history}
+"""
+
+
 class RAGChain:
-    """Grounded LCEL Conversation Retrieval Chain with strict format, memory, and citations."""
+    """Grounded LCEL Conversation Retrieval Chain with strict mode, optional fallback, memory, and citations."""
 
     def __init__(
         self,
         retriever: GrammarRetriever,
-        model_name: str = "llama-3.3-70b-versatile",
+        model_name: str = "openai/gpt-oss-20b",
         temperature: float = 0.0,
         max_history_turns: int = 5,
     ) -> None:
@@ -67,7 +90,7 @@ class RAGChain:
             max_tokens=2048,
         )
 
-        # Main grounded answer chain (LCEL: Prompt | LLM | StrOutputParser)
+        # 1. Strict book-only RAG chain (LCEL: Prompt | LLM | StrOutputParser)
         self.prompt = ChatPromptTemplate.from_messages(
             [
                 ("system", SYSTEM_PROMPT),
@@ -76,7 +99,7 @@ class RAGChain:
         )
         self.chain = self.prompt | self.llm | StrOutputParser()
 
-        # Follow-up question rewriter (for FR9 Conversation Memory)
+        # 2. Follow-up question rewriter (for FR9 Conversation Memory)
         self.rewrite_prompt = ChatPromptTemplate.from_messages(
             [
                 (
@@ -91,6 +114,15 @@ class RAGChain:
             ]
         )
         self.rewrite_chain = self.rewrite_prompt | self.llm | StrOutputParser()
+
+        # 3. Optional General AI Fallback chain (runs ONLY when allow_fallback=True)
+        self.fallback_prompt = ChatPromptTemplate.from_messages(
+            [
+                ("system", FALLBACK_SYSTEM_PROMPT),
+                ("human", "{question}"),
+            ]
+        )
+        self.fallback_chain = self.fallback_prompt | self.llm | StrOutputParser()
 
     @staticmethod
     def _format_docs(docs: List[Document]) -> str:
@@ -112,11 +144,12 @@ class RAGChain:
     def _get_search_query(self, question: str) -> str:
         if not self.chat_history:
             return question
-        return self.rewrite_chain.invoke(
+        rewritten = self.rewrite_chain.invoke(
             {"chat_history": self._format_history(), "question": question}
         ).strip()
+        return rewritten or question
 
-    def ask(self, question: str) -> Dict[str, Any]:
+    def ask(self, question: str, allow_fallback: bool = False) -> Dict[str, Any]:
         if not question or not question.strip():
             raise ValueError("Question cannot be empty.")
 
@@ -124,7 +157,7 @@ class RAGChain:
         search_query = self._get_search_query(question)
         sources = self.retriever.retrieve(search_query)
 
-        # 2. Generate strict grounded answer via LCEL chain
+        # 2. Generate strict book-grounded answer via LCEL chain
         context = self._format_docs(sources)
         history_text = self._format_history()
         answer = self.chain.invoke(
@@ -134,11 +167,20 @@ class RAGChain:
                 "question": question,
             }
         ).strip()
-      
+
         if not answer:
             answer = "Not found in the book."
 
-        # 3. Save turn to conversation memory (Human/AI roles)
+        # 3. Optional General AI Fallback ONLY if toggle is ON and not found in book
+        if answer == "Not found in the book." and allow_fallback:
+            fallback_answer = self.fallback_chain.invoke(
+                {"chat_history": history_text, "question": question}
+            ).strip()
+            if fallback_answer:
+                answer = fallback_answer
+                sources = []  # Hide irrelevant book pages for general AI answers
+
+        # 4. Save turn to conversation memory (Human/AI roles)
         self.chat_history.append({"human": question, "ai": answer})
 
         return {"answer": answer, "sources": sources}
@@ -171,21 +213,29 @@ if __name__ == "__main__":
         temperature=LLM_TEMPERATURE,
     )
 
-    # Test 1: In-book Grammar Topic (FR5 + FR6 + FR7)
+    # Test 1: In-book Grammar Topic (Strict + Page Citations)
     res1 = rag.ask("Explain Present Simple")
     pages1 = sorted({d.metadata.get("page", "N/A") for d in res1["sources"]})
     print("=== TEST 1: IN-BOOK TOPIC ===")
     print(res1["answer"])
     print(f"Cited Pages: {pages1}\n")
 
-    # Test 2: Follow-up Question using Memory (FR9)
+    # Test 2: Follow-up Question using Memory
     res2 = rag.ask("Give me examples of its negative form")
     pages2 = sorted({d.metadata.get("page", "N/A") for d in res2["sources"]})
     print("=== TEST 2: FOLLOW-UP MEMORY ===")
     print(res2["answer"])
     print(f"Cited Pages: {pages2}\n")
 
-    # Test 3: Out-of-book Hallucination Check (FR5)
-    res3 = rag.ask("Who won the 2022 FIFA World Cup?")
-    print("=== TEST 3: OUT-OF-BOOK GUARDRAIL ===")
-    print(res3["answer"])
+    # Test 3: Out-of-book in STRICT mode (default)
+    res3 = rag.ask("Who won the 2022 FIFA World Cup?", allow_fallback=False)
+    print("=== TEST 3: STRICT GUARDRAIL (OFF) ===")
+    print(res3["answer"], "\n")
+
+    # Test 4: Out-of-book in FALLBACK mode (toggle ON)
+    res4 = rag.ask(
+        "Difference between present simple and past perfect", allow_fallback=True
+    )
+    print("=== TEST 4: FALLBACK MODE (ON) ===")
+    print(res4["answer"])
+    print(f"Cited Pages (should be empty []): {res4['sources']}")
