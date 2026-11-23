@@ -1,0 +1,138 @@
+[
+  {
+    "id": 1,
+    "type": "in_book",
+    "question": "Explain the present simple tense.",
+    "expected_behavior": "Structured 5-section answer grounded in book with page citations.",
+    "cited_pages": [
+      10,
+      22,
+      39,
+      48,
+      334,
+      354
+    ],
+    "answer": "### Rule\nThe present simple is used to make simple statements of fact, to talk about things that happen repeatedly, and to describe things that are always true.  \nWith “he,” “she,” and “it,” add “-s” to the base form of the verb.\n\n### Tips & Tricks\n- To form the present simple of most verbs, use the base form (the infinitive without “to”).  \n- Adverbs of frequency are often used with the present simple.  \n- The base form of the verb “to eat” is “eat.”  \n- With “he,” “she,” and “it,” “-s” is added to the base form.\n\n### Examples \nNot mentioned in the retrieved book pages.\n\n### Common Mistakes\nNot mentioned in the retrieved book pages.",
+    "auto_check": "HUMAN_CHECK_REQUIRED",
+    "human_groundedness_verdict": "PENDING (PASS/FAIL)"
+  },
+  {
+    "id": 2,
+    "type": "follow_up_memory",
+    "question": "What are its negative form rules?",
+    "expected_behavior": "Uses memory of Present Simple and explains Present Simple Negative from book.",
+    "cited_pages": [
+      14,
+      15,
+      23,
+      30,
+      31,
+      338
+    ],
+    "answer": "### Rule\nTo make negative sentences using “be” in the present simple, “not” is added after the verb. For other verbs, the auxiliary verb “do not” or “does not” is used.\n\n### Tips & Tricks\n- “Be” takes the same form in positive and negative sentences; the only difference is adding “not.”\n- For other verbs, “do not” (or “does not” with he/she/it) precedes the base form of the verb.\n- “Not” is added after “do” or “does” in the negative.\n\n### Examples \nNot mentioned in the retrieved book pages.\n\n### Common Mistakes\nNot mentioned in the retrieved book pages.",
+    "auto_check": "HUMAN_CHECK_REQUIRED",
+    "human_groundedness_verdict": "PENDING (PASS/FAIL)"
+  },
+  {
+    "id": 3,
+    "type": "in_book",
+    "question": "What is the difference between past simple and present perfect simple?",
+    "expected_behavior": "Grounded comparison from book pages (~39, 48).",
+    "cited_pages": [
+      36,
+      39,
+      41,
+      42,
+      43,
+      48
+    ],
+    "answer": "### Rule\nThe past simple is used to refer to single, completed actions or events in the past. These no longer have a consequence in the present moment.  \nThe present perfect simple is used to refer to actions or events in the past that are unfinished, or still have consequences in the present moment.\n\n### Tips & Tricks\n- Use the past simple when the action happened at a definite time and is finished.  \n- Use the present perfect when a specific time is not mentioned and the result is still relevant now.\n\n### Examples \n- *The essay is finished, so the past simple is used.*  \n- *The essay is unfinished, so the present perfect simple is used.*  \n- *This is no longer relevant to the present moment, because the keys were found.*  \n- *The keys are still lost in the present moment, so the present perfect simple is used.*\n\n### Common Mistakes\nNot mentioned in the retrieved book pages.",
+    "auto_check": "HUMAN_CHECK_REQUIRED",
+    "human_groundedness_verdict": "PENDING (PASS/FAIL)"
+  },
+  {
+    "id": 4,
+    "type": "in_book",
+    "question": "When do we use will vs going to for the future?",
+    "expected_behavior": "Grounded future tense rules from book (~pages 50-67).",
+    "cited_pages": [
+      52,
+      53,
+      65,
+      66,
+      67,
+      337
+    ],
+    "answer": "### Rule\n“Will” is used to make predictions that aren’t based on present evidence, to offer to do something, to make a promise, or to describe a decision you’ve just made at the time of speaking.  \n“Going to” is used when there is evidence in the present moment to support a prediction, or for decisions that have already been made before the time of speaking.\n\n### Tips & Tricks\n- Remember to use the future with “going to” for predictions based on current evidence, and for decisions made before the time of speaking.  \n- Use “will” for predictions without firm evidence, quick decisions made at the moment, offers, and promises.\n\n### Examples \nNot mentioned in the retrieved book pages.\n\n### Common Mistakes\nNot mentioned in the retrieved book pages.",
+    "auto_check": "HUMAN_CHECK_REQUIRED",
+    "human_groundedness_verdict": "PENDING (PASS/FAIL)"
+  },
+  {
+    "id": 5,
+    "type": "in_book",
+    "question": "What are relative clauses?",
+    "expected_behavior": "Grounded definition and rules of relative clauses from book (~pages 229-242).",
+    "cited_pages": [
+      228,
+      229,
+      230,
+      231,
+      359,
+      361
+    ],
+    "answer": "### Rule\nA relative clause is a part of a sentence that gives more information about the subject. A defining, or restrictive, relative clause identifies the subject being talked about.\n\n### Tips & Tricks\nNot mentioned in the retrieved book pages.\n\n### Examples\nNot mentioned in the retrieved book pages.\n\n### Common Mistakes\nNot mentioned in the retrieved book pages.",
+    "auto_check": "HUMAN_CHECK_REQUIRED",
+    "human_groundedness_verdict": "PENDING (PASS/FAIL)"
+  },
+  {
+    "id": 6,
+    "type": "in_book",
+    "question": "Explain conditional sentences.",
+    "expected_behavior": "Grounded conditional rules from book.",
+    "cited_pages": [
+      80,
+      81,
+      86,
+      87,
+      88,
+      89
+    ],
+    "answer": "### Rule\nConditional sentences are used to describe real or hypothetical results of real or hypothetical situations. They can use many different verb forms. (Page 80)\n\n### Tips & Tricks\n- The zero conditional is used for general truths and always true situations.  \n- The first, second, and third conditionals all refer to hypothetical situations.  \n- In the zero conditional, “if” and “when” mean the same thing.  \n- In the first conditional, “will” can be replaced by other modal verbs to express different ideas.  \n- In the second conditional, “would” can be replaced by “could” or “might” to express ability, possibility, or uncertainty.  \n- In the third conditional, “would” can also be replaced by “could” or “might” for similar purposes.  \n- When the action comes before the result, a comma separates the two clauses; if the result comes first, no comma is used. (Page 88)  \n- “Will,” “would,” and “would have” should not be used in the “if” clause when forming conditional sentences. (Page 89)  \n\n### Examples \nNot mentioned in the retrieved book pages.  \n\n### Common Mistakes\n- Using “will,” “would,” or “would have” in the “if” clause. (Page 89)  \n- Omitting the comma when the action precedes the result, or incorrectly placing a comma when the result comes first. (Page 88)",
+    "auto_check": "HUMAN_CHECK_REQUIRED",
+    "human_groundedness_verdict": "PENDING (PASS/FAIL)"
+  },
+  {
+    "id": 7,
+    "type": "out_of_book",
+    "question": "Who won the 2022 FIFA World Cup?",
+    "expected_behavior": "Exact reply: Not found in the book.",
+    "cited_pages": [
+      62,
+      63,
+      64,
+      74,
+      75,
+      82
+    ],
+    "answer": "Not found in the book.",
+    "auto_check": "PASS",
+    "human_groundedness_verdict": "PENDING (PASS/FAIL)"
+  },
+  {
+    "id": 8,
+    "type": "out_of_book",
+    "question": "Explain Python decorators with an example.",
+    "expected_behavior": "Exact reply: Not found in the book.",
+    "cited_pages": [
+      54,
+      159,
+      185,
+      324,
+      325,
+      333
+    ],
+    "answer": "Not found in the book.",
+    "auto_check": "PASS",
+    "human_groundedness_verdict": "PENDING (PASS/FAIL)"
+  }
+]

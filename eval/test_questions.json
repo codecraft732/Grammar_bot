@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "type": "in_book",
+    "clear_memory_before": true,
+    "question": "Explain the present simple tense.",
+    "expected_behavior": "Structured 5-section answer grounded in book with page citations."
+  },
+  {
+    "id": 2,
+    "type": "follow_up_memory",
+    "clear_memory_before": false,
+    "question": "What are its negative form rules?",
+    "expected_behavior": "Uses memory of Present Simple and explains Present Simple Negative from book."
+  },
+  {
+    "id": 3,
+    "type": "in_book",
+    "clear_memory_before": true,
+    "question": "What is the difference between past simple and present perfect simple?",
+    "expected_behavior": "Grounded comparison from book pages (~39, 48)."
+  },
+  {
+    "id": 4,
+    "type": "in_book",
+    "clear_memory_before": true,
+    "question": "When do we use will vs going to for the future?",
+    "expected_behavior": "Grounded future tense rules from book (~pages 50-67)."
+  },
+  {
+    "id": 5,
+    "type": "in_book",
+    "clear_memory_before": true,
+    "question": "What are relative clauses?",
+    "expected_behavior": "Grounded definition and rules of relative clauses from book (~pages 229-242)."
+  },
+  {
+    "id": 6,
+    "type": "in_book",
+    "clear_memory_before": true,
+    "question": "Explain conditional sentences.",
+    "expected_behavior": "Grounded conditional rules from book."
+  },
+  {
+    "id": 7,
+    "type": "out_of_book",
+    "clear_memory_before": true,
+    "question": "Who won the 2022 FIFA World Cup?",
+    "expected_behavior": "Exact reply: Not found in the book."
+  },
+  {
+    "id": 8,
+    "type": "out_of_book",
+    "clear_memory_before": true,
+    "question": "Explain Python decorators with an example.",
+    "expected_behavior": "Exact reply: Not found in the book."
+  }
+]
